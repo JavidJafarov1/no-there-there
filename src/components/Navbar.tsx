@@ -1,7 +1,13 @@
-import { Box, Flex, Text, useColorModeValue } from '@chakra-ui/react'
+import { Box, Flex, Text, Button, useColorModeValue } from '@chakra-ui/react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { useAccount } from 'wagmi'
+import SocialVerification from './SocialVerification'
+import { useAuth } from '../hooks/useAuth'
 
 const Navbar = () => {
+  const { isConnected } = useAccount()
+  const { isAuthenticated, isAuthenticating, authenticate, logout } = useAuth()
+
   return (
     <Box
       as="nav"
@@ -29,7 +35,31 @@ const Navbar = () => {
         >
           Web3 App
         </Text>
-        <ConnectButton />
+        <Flex gap={4} alignItems="center">
+          {isConnected && !isAuthenticated && (
+            <Button
+              onClick={authenticate}
+              isLoading={isAuthenticating}
+              loadingText="Authenticating"
+              colorScheme="purple"
+            >
+              Authenticate
+            </Button>
+          )}
+          {isAuthenticated && (
+            <>
+              <SocialVerification isConnected={isConnected} />
+              <Button
+                onClick={logout}
+                variant="ghost"
+                colorScheme="purple"
+              >
+                Logout
+              </Button>
+            </>
+          )}
+          <ConnectButton />
+        </Flex>
       </Flex>
     </Box>
   )
